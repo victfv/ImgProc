@@ -23,6 +23,7 @@ namespace ImageFunc
     {
         
         unsigned int h_width = (w / 2);
+        #pragma omp parallel for
         for (unsigned int y = 0; y < h; y++)
         {
             for (unsigned int x = 0; x < h_width; x++)
@@ -46,19 +47,16 @@ namespace ImageFunc
     void flip_vertical(unsigned char* image, unsigned int w, unsigned int h, int channels)
     {
         unsigned int h_height = (h / 2);
-        if (temp_buffer_a != nullptr)
-        {
-            delete[] temp_buffer_a;
-        }
-        temp_buffer_a = new unsigned char[w * channels];
         unsigned int line_size = sizeof(unsigned char) * w * channels;
+        #pragma omp parallel for
         for (unsigned int i = 0; i < (h_height); i++)
         {
             unsigned int start_offset = i * w * channels;
             unsigned int end_offset = (h - i - 1) * w * channels;
-            std::memcpy(temp_buffer_a, image + start_offset, line_size);
+            unsigned char* temp = new unsigned char[w * channels]; 
+            std::memcpy(temp, image + start_offset, line_size);
             std::memcpy(image + start_offset, image + end_offset, line_size);
-            std::memcpy(image + end_offset, temp_buffer_a, line_size);
+            std::memcpy(image + end_offset, temp, line_size);
         }
     }
 

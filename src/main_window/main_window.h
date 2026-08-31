@@ -18,7 +18,6 @@
 #include "../signals/signals.h"
 
 #include <string>
-#include <functional>
 
 class TopBar;
 
@@ -55,10 +54,10 @@ public:
             Fl::add_timeout(0.008, resize_timeout, this);
     }
 
-    void draw() override
+    /*void draw() override
     {
         
-        fl_color(FL_BLACK);
+        //fl_color(FL_BLACK);
         fl_rectf(x(), y(), w(), h());
 
         if (!scaled)
@@ -69,7 +68,7 @@ public:
         int py = y() + (h() - scaled->h()) / 2;
 
         scaled->draw(px, py);
-    }
+    }*/
 
 private:
     void update_image()
@@ -92,7 +91,7 @@ private:
         scaled = static_cast<Fl_RGB_Image*>(original->copy(nw, nh));
 
         image(scaled);
-        redraw();
+        Fl::redraw();
     }
 };
 

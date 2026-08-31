@@ -1,10 +1,5 @@
 #include "main_window/main_window.h"
-#include <iostream>
-
-void ButtonCallback(Fl_Widget*, void*)
-{
-    puts("Hello!");
-}
+#include <FL/Fl.H>
 
 int main(int argc, char **argv) {
     MainWindow *window = new MainWindow(800, 600, "ImgProc");

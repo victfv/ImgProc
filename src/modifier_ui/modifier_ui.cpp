@@ -15,7 +15,7 @@ ModifierUIItem::ModifierUIItem(Modifier modifier, unsigned int index) : Fl_Flex(
     Fl_Flex* flx = new Fl_Flex(0,0,0,0);
     flx->end();
     Fl_Toggle_Button* visible_btn = new Fl_Toggle_Button(16,16,16,16,"@+");
-    visible_btn->value(!mod.visible);
+    visible_btn->value(mod.visible);
     visible_btn->callback(visible_callback,static_cast<void*>(this));
     vflex->fixed(visible_btn,24);
     flx = new Fl_Flex(0,0,0,0);
@@ -113,7 +113,7 @@ void ModifierUIItem::visible_callback(Fl_Widget* w, void* user_data)
     Image* image = ModifierUI::instance->get_image();
     Fl_Toggle_Button* btn = static_cast<Fl_Toggle_Button*>(w);
     Modifier md = ui_item->mod;
-    md.visible = btn->value() == 0;
+    md.visible = btn->value() != 0;
     image->modify_modifier(ui_item->idx, md);
 }
 
