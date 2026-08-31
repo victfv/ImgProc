@@ -12,10 +12,13 @@
 #include <FL/Fl_Button.H>
 #include <FL/Fl_Native_File_Chooser.H>
 #include <FL/Fl_RGB_Image.H>
+#include "FL/Fl_Image.H"
 #include "top_bar.h"
 #include "../image_processing/image.h"
 #include "../modifier_ui/modifier_ui.h"
 #include "../signals/signals.h"
+
+#define DOOM_IMPLEMENTATION
 
 #include <string>
 

@@ -3,6 +3,7 @@
 #include <cstring>
 #include <algorithm>
 #include <iostream>
+#include <vector>
 
 namespace ImageFunc
 {
@@ -23,23 +24,27 @@ namespace ImageFunc
     {
         
         unsigned int h_width = (w / 2);
-        #pragma omp parallel for
-        for (unsigned int y = 0; y < h; y++)
+        #pragma omp parallel
         {
-            for (unsigned int x = 0; x < h_width; x++)
+            std::vector<unsigned char> temp(channels);
+            #pragma omp for
+            for (unsigned int y = 0; y < h; y++)
             {
-                unsigned int index_left = xy_to_index(x,y,w,h,channels);
-                unsigned int index_right = xy_to_index(w - x - 1,y,w,h,channels);
-                unsigned char temp[channels];
-                for (int c = 0; c < channels; c++)
+                for (unsigned int x = 0; x < h_width; x++)
                 {
-                    temp[c] = image[index_left + c];
-                }
+                    unsigned int index_left = xy_to_index(x,y,w,h,channels);
+                    unsigned int index_right = xy_to_index(w - x - 1,y,w,h,channels);
+                    
+                    for (int c = 0; c < channels; c++)
+                    {
+                        temp[c] = image[index_left + c];
+                    }
 
-                for (int c = 0; c < channels; c++)
-                {
-                    image[index_left + c] = image[index_right + c];
-                    image[index_right + c] = temp[c];
+                    for (int c = 0; c < channels; c++)
+                    {
+                        image[index_left + c] = image[index_right + c];
+                        image[index_right + c] = temp[c];
+                    }
                 }
             }
         }
@@ -48,15 +53,19 @@ namespace ImageFunc
     {
         unsigned int h_height = (h / 2);
         unsigned int line_size = sizeof(unsigned char) * w * channels;
-        #pragma omp parallel for
-        for (unsigned int i = 0; i < (h_height); i++)
+        #pragma omp parallel
         {
-            unsigned int start_offset = i * w * channels;
-            unsigned int end_offset = (h - i - 1) * w * channels;
-            unsigned char* temp = new unsigned char[w * channels]; 
-            std::memcpy(temp, image + start_offset, line_size);
-            std::memcpy(image + start_offset, image + end_offset, line_size);
-            std::memcpy(image + end_offset, temp, line_size);
+            std::vector<unsigned char> temp(line_size);
+            #pragma omp for schedule(static)
+            for (unsigned int i = 0; i < (h_height); i++)
+            {
+                size_t start_offset = static_cast<size_t>(i * w * channels);
+                size_t end_offset = static_cast<size_t>((h - i - 1) * w * channels);
+                
+                std::memcpy(temp.data(), image + start_offset, line_size);
+                std::memcpy(image + start_offset, image + end_offset, line_size);
+                std::memcpy(image + end_offset, temp.data(), line_size);
+            }
         }
     }
 

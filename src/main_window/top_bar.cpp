@@ -24,8 +24,8 @@ MainWindow* TopBar::main_window;
 void TopBar::create_bar()
 {
     this->add("File"                    ,FL_ALT+'f'  ,0,0,FL_SUBMENU);
-    this->add("File/Open"               ,0           ,submenu_callback,(void*)0);
-    this->add("File/Save"               ,0           ,submenu_callback,(void*)1);
+    this->add("File/Open"               ,0           ,submenu_callback ,(void*)0);
+    this->add("File/Save"               ,0           ,submenu_callback ,(void*)1);
     this->add("Modifiers"               ,FL_ALT+'m'  ,0,0,FL_SUBMENU);
     this->add("Modifiers/Grayscale"     ,0           ,modifier_callback,(void*)MOD_GRAYSCALE);
     this->add("Modifiers/Quantize"      ,0           ,modifier_callback,(void*)MOD_QUANTIZE);
