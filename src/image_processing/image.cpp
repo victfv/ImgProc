@@ -33,7 +33,7 @@ Image::~Image()
 {
     send_simple("image_kill",0);
     stbi_image_free(data);
-    stbi_image_free(modified_data);
+    delete[] modified_data;
 }
 
 void Image::add_modifier(Modifier modifier)

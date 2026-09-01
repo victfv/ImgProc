@@ -36,11 +36,24 @@ public:
         box(FL_NO_BOX);
     }
 
-    void set_image(Fl_RGB_Image* img)
+    void set_image(Image* img, bool orig)
     {
-        original = img;
+        if (original != nullptr)
+        {
+            delete original;
+        }
+        unsigned char* data;
+        if (orig)
+        {
+            data = img->get_data();
+        }
+        else
+        {
+            data = img->get_modified_data();
+        }
+
+        original = new Fl_RGB_Image(data, img->w(), img->h(), img->get_channels());
         update_image();
-        redraw();
     }
 
     static void resize_timeout(void* userdata)
@@ -136,14 +149,14 @@ class MainWindow : public Fl_Double_Window, public Signal
 
         //Fl_Tabs* tabs;
         Fl_Flex* image_panel;
-        ImageBox* image_box;
-        Fl_RGB_Image* main_fl_image = nullptr;
+        ImageBox* modified_ibox;
+        ImageBox* original_ibox;
         Fl_Flex* side_panel_flex;
         TopBar* top_bar;
         ModifierUI* mod_ui;
 
         Fl_Tile* tile;
-        Image* image_proc = nullptr;
+        Image* proc_image = nullptr;
 };
 
 #endif

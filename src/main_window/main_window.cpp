@@ -1,4 +1,5 @@
 #include "main_window.h"
+#include "FL/Fl_Valuator.H"
 #include <FL/Fl.H>
 #include <FL/Fl_Native_File_Chooser.H>
 #include <cstring>
@@ -29,9 +30,11 @@ void MainWindow::create_initial_layout(int w, int h)
     tile->size_range(mod_ui, 200, 50);
 
     image_panel = new Fl_Flex(panel_size,y_begin,img_size,h);
+    image_panel->type(FL_HORIZONTAL);
     //image_panel->color(FL_BLACK);
     image_panel->box(FL_UP_BOX);
-    image_box = new ImageBox(0,0,img_size,h);
+    original_ibox = new ImageBox(0,0,img_size,h);
+    modified_ibox = new ImageBox(0,0,img_size,h);
     //image_box->color(FL_BLACK);
     image_panel->end();
     tile->size_range(image_panel, 50, 50);
@@ -88,53 +91,28 @@ void MainWindow::open_image()
         return;
     }
 
-    if (image_proc != nullptr)
+    if (proc_image != nullptr)
     {
-        delete image_proc;
-        image_proc = nullptr;
+        delete proc_image;
+        proc_image = nullptr;
     }
 
 
-    image_proc = new Image(path);
-    mod_ui->set_image(image_proc);
-
-    create_fl_image(
-        image_proc->get_modified_data(),
-        image_proc->get_width(),
-        image_proc->get_height(),
-        image_proc->get_channels()
-    );
+    proc_image = new Image(path);
+    mod_ui->set_image(proc_image);
 
     update_image();
 }
 
 void MainWindow::update_image()
 {
-    image_box->set_image(main_fl_image);
-    image_box->redraw();
-    redraw();
-}
-
-void MainWindow::create_fl_image(unsigned char* data, int w, int h, int channels)
-{
-    if (main_fl_image != nullptr)
-    {
-        delete main_fl_image;
-        main_fl_image = nullptr;
-    }
-    main_fl_image = new Fl_RGB_Image
-    (
-        data,
-        w,
-        h,
-        channels
-    );
-    main_fl_image->scaling_algorithm(FL_RGB_SCALING_BILINEAR);
+    original_ibox->set_image(proc_image, true);
+    modified_ibox->set_image(proc_image, false);
 }
 
 void MainWindow::save_image()
 {
-    if (image_proc == nullptr)
+    if (proc_image == nullptr)
     {
         return;
     }
@@ -146,20 +124,39 @@ void MainWindow::save_image()
         return;
     }
 
-    image_proc->save_image(path);
+    proc_image->save_image(path);
 
 }
 
 void MainWindow::receive_simple(std::string message, int num)
 {
-    if (message == "image_update" && image_proc != nullptr)
+    if (message == "image_update" && proc_image != nullptr)
     {
-        create_fl_image(
-        image_proc->get_modified_data(),
-        image_proc->get_width(),
-        image_proc->get_height(),
-        image_proc->get_channels()
-        );
         update_image();
+    }
+    else if (message == "toggle_image")
+    {
+        switch(num)
+        {
+            case 0:
+                original_ibox->show();
+                modified_ibox->show();
+                image_panel->fixed(original_ibox,0);
+                image_panel->fixed(modified_ibox,0);
+                break;
+            case 1:
+                original_ibox->show();
+                modified_ibox->hide();
+                image_panel->fixed(original_ibox,0);
+                image_panel->fixed(modified_ibox,1);
+                break;
+            case 2:
+                original_ibox->hide();
+                modified_ibox->show();
+                image_panel->fixed(original_ibox,1);
+                image_panel->fixed(modified_ibox,0);
+                break;
+        }
+        redraw();
     }
 }

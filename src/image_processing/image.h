@@ -28,8 +28,6 @@ class Image : public Signal
         void add_modifier(Modifier modifier);
         void remove_modifier(unsigned int position);
         void swap_modifier_position(int original_position,int new_position);
-        int get_width() {return size_x;}
-        int get_height() {return size_y;}
         unsigned char* get_data();
         unsigned char* get_modified_data();
         int get_channels(){return channels;}
@@ -41,6 +39,8 @@ class Image : public Signal
         void receive_simple(std::string message, int num);
         void receive(void* sender, std::string t_sender, void* data, std::string t_data);
         void save_image(const char* path);
+        int w(){return size_x;}
+        int h(){return size_y;}
     private:
         unsigned char* data;
         unsigned char* modified_data;
